@@ -18,6 +18,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rohith-97/delta/internal/auth"
 	"github.com/rohith-97/delta/internal/tracker"
+	"github.com/rohith-97/delta/internal/vuln"
 )
 
 type Server struct {
@@ -82,6 +83,13 @@ func main() {
 	// public routes
 	r.Post("/auth/register", srv.handleRegister)
 	r.Post("/auth/login", srv.handleLogin)
+
+	// protected routes
+	// xss demo routes - public, intentionally vulnerable
+	r.Get("/vuln/xss", vuln.VulnerableHandler)
+	r.Get("/secure/xss", vuln.SecureHandler)
+	r.Get("/vuln/xss/stored", vuln.StoredVulnerableHandler)
+	r.Post("/vuln/xss/stored", vuln.StoredVulnerableHandler)
 
 	// protected routes
 	r.Group(func(r chi.Router) {
